@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机器人控制系统 - 系统信息</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        /* 主容器布局 */
+        .system-info-container {
+            display: flex;
+            height: 100vh;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 260px;
+            background-color: #f8f9fa;
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            padding: 16px 0;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            color: #2563eb;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 12px;
+        }
+
+        .back-btn:hover {
+            background-color: #eff6ff;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            flex: 1;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .sidebar-item:hover {
+            background-color: #e5e7eb;
+        }
+
+        .sidebar-item.active {
+            background-color: #dbeafe;
+            color: #1e40af;
+            font-weight: 500;
+        }
+
+        .sidebar-item-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-item-icon {
+            width: 18px;
+            height: 18px;
+            opacity: 0.8;
+        }
+
+        .sidebar-item-arrow {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        /* 右侧主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        /* 上传操作区 */
+        .upload-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-success {
+            background-color: #22c55e;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background-color: #16a34a;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* 上传历史/状态区 */
+        .upload-history {
+            background-color: #f9fafb;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .history-table th {
+            text-align: left;
+            padding: 10px 12px;
+            background-color: #f3f4f6;
+            color: #4b5563;
+            font-weight: 500;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .history-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #374151;
+        }
+
+        .history-table tr:hover {
+            background-color: #f3f4f6;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-failed {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+
+        /* 上传进度条 */
+        .progress-section {
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #3b82f6;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #4b5563;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* 帮助提示区 */
+        .help-section {
+            background-color: #eff6ff;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+        }
+
+        .help-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+
+        .help-list {
+            list-style: none;
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.8;
+        }
+
+        .help-list li::before {
+            content: "•";
+            color: #3b82f6;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .system-info-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+
+            .main-content {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="system-info-container">
+        <!-- 左侧导航栏 -->
+        <aside class="sidebar">
+            <div class="back-btn" onclick="goBack()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                <span>返回</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item" onclick="navigateTo('固件升级')">
+                    <div class="sidebar-item-left">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>固件升级</span>
+                    </div>
+                    <span class="sidebar-item-arrow">›</span>
+                </li>
+                <li class="sidebar-item" onclick="navigateTo('Log下载')">
+                    <div class="sidebar-item-left">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18"></path>
+                            <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                        </svg>
+                        <span>Log下载</span>
+                    </div>
+                    <span class="sidebar-item-arrow">›</span>
+                </li>
+                <li class="sidebar-item active" onclick="navigateTo('上传地图')">
+                    <div class="sidebar-item-left">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span>上传地图</span>
+                    </div>
+                    <span class="sidebar-item-arrow">›</span>
+                </li>
+                <li class="sidebar-item" onclick="navigateTo('上传激光参数文件')">
+                    <div class="sidebar-item-left">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span>上传激光参数文件</span>
+                    </div>
+                    <span class="sidebar-item-arrow">›</span>
+                </li>
+                <li class="sidebar-item" onclick="navigateTo('回滚')">
+                    <div class="sidebar-item-left">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span>回滚</span>
+                    </div>
+                    <span class="sidebar-item-arrow">›</span>
+                </li>
+                <li class="sidebar-item" onclick="navigateTo('同步时间')">
+                    <div class="sidebar-item-left">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span>同步时间</span>
+                    </div>
+                    <span class="sidebar-item-arrow">›</span>
+                </li>
+                <li class="sidebar-item" onclick="navigateTo('系统状态')">
+                    <div class="sidebar-item-left">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>系统状态</span>
+                    </div>
+                    <span class="sidebar-item-arrow">›</span>
+                </li>
+                <li class="sidebar-item" onclick="navigateTo('恢复出厂设置')">
+                    <div class="sidebar-item-left">
+                        <svg class="sidebar-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="1 4 1 10 7 10"></polyline>
+                            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                        </svg>
+                        <span>恢复出厂设置</span>
+                    </div>
+                    <span class="sidebar-item-arrow">›</span>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- 右侧主内容区 -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">系统信息</h1>
+            </div>
+
+            <!-- 上传操作按钮区 -->
+            <div class="upload-section">
+                <input type="file" id="mapFileInput" style="display: none" accept=".pcd,.map,.yaml,.json" onchange="handleFileSelect()">
+                <button class="btn btn-primary" onclick="document.getElementById('mapFileInput').click()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    选择文件
+                </button>
+                <button class="btn btn-success" id="uploadBtn" disabled onclick="startUpload()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    上传到原地图
+                </button>
+            </div>
+
+            <!-- 上传进度条 -->
+            <div class="progress-section" id="progressSection">
+                <div class="progress-text">
+                    <span>正在上传地图文件...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+
+            <!-- 上传历史记录 -->
+            <div class="upload-history">
+                <h2 class="section-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                    上传历史
+                </h2>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>文件名</th>
+                            <th>文件大小</th>
+                            <th>上传时间</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <tr>
+                            <td>office_20250312.map</td>
+                            <td>128.5 MB</td>
+                            <td>2025-03-12 14:30:22</td>
+                            <td><span class="status-badge status-success">上传成功</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="viewMap('office_20250312.map')">查看</button>
+                                <button class="btn btn-sm" style="background:#ef4444;color:#fff" onclick="deleteMap('office_20250312.map')">删除</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>warehouse_20250310.pcd</td>
+                            <td>256.2 MB</td>
+                            <td>2025-03-10 09:15:47</td>
+                            <td><span class="status-badge status-success">上传成功</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="viewMap('warehouse_20250310.pcd')">查看</button>
+                                <button class="btn btn-sm" style="background:#ef4444;color:#fff" onclick="deleteMap('warehouse_20250310.pcd')">删除</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>lab_test_20250308.yaml</td>
+                            <td>2.1 MB</td>
+                            <td>2025-03-08 16:42:19</td>
+                            <td><span class="status-badge status-failed">上传失败</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="retryUpload('lab_test_20250308.yaml')">重试</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 帮助提示区 -->
+            <div class="help-section">
+                <h3 class="help-title">📋 地图上传说明</h3>
+                <ul class="help-list">
+                    <li>支持格式：.map / .pcd / .yaml / .json，单文件大小建议不超过 500MB</li>
+                    <li>上传前请确认地图文件与当前机器人型号、传感器配置匹配</li>
+                    <li>上传成功后，系统将自动覆盖原地图，建议先备份原地图文件</li>
+                    <li>上传过程中请勿断开机器人网络或关闭页面，避免文件损坏</li>
+                    <li>若上传失败，请检查文件完整性、网络连接后重试</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 全局状态
+        let selectedFile = null;
+
+        // 返回按钮
+        function goBack() {
+            alert('返回上一级页面');
+            // 实际项目中可替换为 history.back()
+        }
+
+        // 导航切换
+        function navigateTo(moduleName) {
+            alert(`跳转到【${moduleName}】页面`);
+            // 实际项目中可替换为路由跳转逻辑
+        }
+
+        // 文件选择处理
+        function handleFileSelect() {
+            const fileInput = document.getElementById('mapFileInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            if (fileInput.files.length > 0) {
+                selectedFile = fileInput.files[0];
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = `上传 ${selectedFile.name} 到原地图`;
+            } else {
+                selectedFile = null;
+                uploadBtn.disabled = true;
+                uploadBtn.textContent = '上传到原地图';
+            }
+        }
+
+        // 模拟上传流程
+        function startUpload() {
+            if (!selectedFile) return;
+
+            // 显示进度条
+            const progressSection = document.getElementById('progressSection');
+            const progressBar = document.getElementById('progressBar');
+            const progressPercent = document.getElementById('progressPercent');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            progressSection.style.display = 'block';
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = '上传中...';
+
+            // 模拟进度
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    // 上传完成
+                    setTimeout(() => {
+                        progressSection.style.display = 'none';
+                        uploadBtn.disabled = true;
+                        uploadBtn.textContent = '上传到原地图';
+                        
+                        // 添加到历史记录
+                        addHistoryRecord(selectedFile);
+                        
+                        // 重置文件选择
+                        document.getElementById('mapFileInput').value = '';
+                        selectedFile = null;
+                        
+                        alert(`文件 ${selectedFile?.name || '未知'} 上传成功！`);
+                    }, 500);
+                }
+                progressBar.style.width = `${progress}%`;
+                progressPercent.textContent = `${Math.round(progress)}%`;
+            }, 200);
+        }
+
+        // 添加历史记录
+        function addHistoryRecord(file) {
+            const tbody = document.getElementById('historyTableBody');
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+            const sizeStr = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${file.name}</td>
+                <td>${sizeStr}</td>
+                <td>${timeStr}</td>
+                <td><span class="status-badge status-success">上传成功</span></td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="viewMap('${file.name}')">查看</button>
+                    <button class="btn btn-sm" style="background:#ef4444;color:#fff" onclick="deleteMap('${file.name}')">删除</button>
+                </td>
+            `;
+            tbody.insertBefore(newRow, tbody.firstChild);
+        }
+
+        // 查看地图
+        function viewMap(mapName) {
+            alert(`查看地图：${mapName}`);
+        }
+
+        // 删除地图
+        function deleteMap(mapName) {
+            if (confirm(`确认删除地图文件：${mapName}？`)) {
+                alert(`已删除地图：${mapName}`);
+                // 实际项目中可添加删除DOM行的逻辑
+            }
+        }
+
+        // 重试上传
+        function retryUpload(mapName) {
+            alert(`重试上传：${mapName}`);
+        }
+    </script>
+</body>
+</html>
