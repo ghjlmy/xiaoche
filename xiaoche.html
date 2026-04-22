@@ -420,95 +420,8 @@
   >
     <!-- 页面容器 -->
     <div id="app-container" class="flex flex-col h-full">
-      <!-- 0. 登录连接页面 -->
-      <div id="login-page" class="flex flex-col h-full bg-gradient-to-br from-blue-50 to-white">
-        <div class="flex-1 flex items-center justify-center">
-          <div class="bg-white rounded-xl shadow-lg p-8 w-96 slide-in">
-            <div class="text-center mb-6">
-              <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fa fa-robot text-white text-3xl"></i>
-              </div>
-              <h2 class="text-2xl font-bold text-dark">AGV智能小车</h2>
-              <p class="text-gray-deep text-sm mt-1">连接机器人设备</p>
-            </div>
-            
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-dark mb-1">机器人IP地址</label>
-                <input
-                  id="robot-ip"
-                  type="text"
-                  class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-                  placeholder="192.168.1.100"
-                  value="192.168.1.100"
-                />
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-dark mb-1">端口号</label>
-                <input
-                  id="robot-port"
-                  type="number"
-                  class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-                  placeholder="8080"
-                  value="8080"
-                />
-              </div>
-              
-              <div class="flex items-center justify-between">
-                <label class="flex items-center gap-2">
-                  <input type="checkbox" id="remember-ip" class="accent-primary w-4 h-4" checked />
-                  <span class="text-sm text-gray-deep">记住IP地址</span>
-                </label>
-              </div>
-              
-              <button
-                id="connect-btn"
-                class="w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-2 font-medium"
-                onclick="handleConnect()"
-              >
-                <i class="fa fa-plug"></i>
-                <span>连接机器人</span>
-              </button>
-              
-              <div class="pt-2">
-                <div class="text-sm text-gray-deep mb-2">快速连接:</div>
-                <div class="flex flex-wrap gap-2">
-                  <button class="px-3 py-1 bg-gray-100 text-gray-dark text-sm rounded hover:bg-gray-200 transition" onclick="setQuickConnect('192.168.1.100', '8080')">
-                    机器人1
-                  </button>
-                  <button class="px-3 py-1 bg-gray-100 text-gray-dark text-sm rounded hover:bg-gray-200 transition" onclick="setQuickConnect('192.168.1.101', '8080')">
-                    机器人2
-                  </button>
-                  <button class="px-3 py-1 bg-gray-100 text-gray-dark text-sm rounded hover:bg-gray-200 transition" onclick="setQuickConnect('192.168.1.102', '8080')">
-                    机器人3
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-            <div id="connect-status" class="mt-4 hidden">
-              <div class="flex items-center gap-2 text-sm">
-                <i class="fa fa-spinner fa-spin text-primary"></i>
-                <span id="connect-status-text">正在连接...</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="bg-white border-t border-gray-200 py-3 px-4 flex items-center justify-between text-sm text-gray-deep">
-          <div>版本: v2.0.0</div>
-          <div class="flex items-center gap-4">
-            <div class="flex items-center gap-1">
-              <i class="fa fa-circle text-success text-xs"></i>
-              <span>系统就绪</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- 1. 主页面 -->
-      <div id="main-page" class="flex flex-col h-full hidden">
+      <div id="main-page" class="flex flex-col h-full">
         <!-- 顶部导航栏 -->
         <header
           class="bg-white shadow-sm border-b border-gray-200 px-4 py-2 flex items-center justify-between z-20 flex-shrink-0"
@@ -669,11 +582,13 @@
                 </li>
                 <li>
                   <button
-                    onclick="switchPage('initial-location-page')"
-                    class="menu-item w-full text-left px-3 py-2 rounded-md flex items-center gap-2 text-dark hover:bg-gray-50 transition-all"
+                    class="menu-item w-full text-left px-3 py-2 rounded-md flex items-center justify-between text-dark hover:bg-gray-50 transition-all"
                   >
-                    <i class="fa fa-crosshairs w-5 text-center"></i>
-                    初始化定位
+                    <div class="flex items-center gap-2">
+                      <i class="fa fa-crosshairs w-5 text-center"></i>
+                      初始化定位
+                    </div>
+                    <i class="fa fa-caret-down text-xs"></i>
                   </button>
                 </li>
                 <li>
@@ -787,102 +702,49 @@
                 "
               ></div>
 
-              <!-- 地图图层 - SVG用于路线和点位 -->
-              <svg id="mapSvg" class="absolute inset-0 w-full h-full">
-                <!-- 1. 路线层 - 带箭头 -->
-                <g id="routesLayer">
-                  <!-- 双向路线 -->
-                  <defs>
-                    <marker id="arrowStart" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                      <polygon points="10 0, 10 7, 0 3.5" fill="#4080FF" />
-                    </marker>
-                    <marker id="arrowEnd" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-                      <polygon points="0 0, 10 3.5, 0 7" fill="#4080FF" />
-                    </marker>
-                    <marker id="arrowSingle" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-                      <polygon points="0 0, 10 3.5, 0 7" fill="#4080FF" />
-                    </marker>
-                  </defs>
-                  <!-- 双向路线：入库 -> 分拣区 -> 导航点1 -> 导航点2 -> 导航点3 -->
-                  <path d="M 180 380 L 220 380 L 220 250 L 280 250 L 280 450 L 380 450"
-                        stroke="#4080FF" stroke-width="3" fill="none" stroke-dasharray="8,4" opacity="0.9"/>
-                  <!-- 带箭头的单方向：导航点3 -> 导航点2 -->
-                  <path d="M 280 450 L 280 250" stroke="#62C462" stroke-width="2" fill="none"
-                        marker-end="url(#arrowSingle)" opacity="0.7" data-direction="single"/>
-                </g>
-                
-                <!-- 2. 点位层 -->
-                <g id="pointsLayer">
-                  <!-- 导航点1（起始点） -->
-                  <g id="point-1" data-type="nav" data-direction="0">
-                    <circle cx="180" cy="380" r="8" fill="#62C462" stroke="#3CB371" stroke-width="2"/>
-                    <circle cx="180" cy="380" r="3" fill="white"/>
-                    <!-- 方向箭头 -->
-                    <polygon points="180,365 175,373 185,373" fill="#62C462"/>
-                    <text x="180" y="400" text-anchor="middle" font-size="10" fill="#333">入库</text>
-                  </g>
-                  
-                  <!-- 导航点2 -->
-                  <g id="point-2" data-type="nav" data-direction="90">
-                    <circle cx="220" cy="380" r="8" fill="#4080FF" stroke="#1E5FB0" stroke-width="2"/>
-                    <circle cx="220" cy="380" r="3" fill="white"/>
-                    <!-- 方向箭头 -->
-                    <polygon points="235,380 227,375 227,385" fill="#4080FF"/>
-                    <text x="220" y="400" text-anchor="middle" font-size="10" fill="#333">分拣区</text>
-                  </g>
-                  
-                  <!-- 导航点3 -->
-                  <g id="point-3" data-type="nav" data-direction="0">
-                    <circle cx="220" cy="250" r="8" fill="#4080FF" stroke="#1E5FB0" stroke-width="2"/>
-                    <circle cx="220" cy="250" r="3" fill="white"/>
-                    <!-- 方向箭头 -->
-                    <polygon points="220,235 215,243 225,243" fill="#4080FF"/>
-                    <text x="220" y="270" text-anchor="middle" font-size="10" fill="#333">导航1</text>
-                  </g>
-                  
-                  <!-- 导航点4 -->
-                  <g id="point-4" data-type="nav" data-direction="0">
-                    <circle cx="280" cy="250" r="8" fill="#4080FF" stroke="#1E5FB0" stroke-width="2"/>
-                    <circle cx="280" cy="250" r="3" fill="white"/>
-                    <!-- 方向箭头 -->
-                    <polygon points="280,235 275,243 285,243" fill="#4080FF"/>
-                    <text x="280" y="270" text-anchor="middle" font-size="10" fill="#333">导航2</text>
-                  </g>
-                  
-                  <!-- 导航点5 -->
-                  <g id="point-5" data-type="nav" data-direction="0">
-                    <circle cx="280" cy="450" r="8" fill="#4080FF" stroke="#1E5FB0" stroke-width="2"/>
-                    <circle cx="280" cy="450" r="3" fill="white"/>
-                    <!-- 方向箭头 -->
-                    <polygon points="280,435 275,443 285,443" fill="#4080FF"/>
-                    <text x="280" y="470" text-anchor="middle" font-size="10" fill="#333">导航3</text>
-                  </g>
-                  
-                  <!-- 充电点 -->
-                  <g id="point-6" data-type="charge" data-direction="180">
-                    <circle cx="380" cy="450" r="10" fill="#EE9A49" stroke="#CC7733" stroke-width="2"/>
-                    <circle cx="380" cy="450" r="4" fill="white"/>
-                    <!-- 方向箭头 -->
-                    <polygon points="380,470 375,462 385,462" fill="#EE9A49"/>
-                    <text x="380" y="490" text-anchor="middle" font-size="10" fill="#333">
-                      <tspan x="380" y="490">充电</tspan>
-                      <tspan x="380" y="502" font-size="8">⚡</tspan>
-                    </text>
-                  </g>
-                </g>
-                
-                <!-- 3. AGV小车层 -->
-                <g id="agvCar" transform="translate(280,250)">
-                  <!-- 小车主体 -->
-                  <rect x="-16" y="-16" width="32" height="32" rx="4" fill="#4080FF"/>
-                  <!-- 小车方向箭头 -->
-                  <polygon points="0,-12 -6,-5 6,-5" fill="white"/>
-                  <!-- 小车图标 -->
-                  <text x="0" y="4" text-anchor="middle" font-size="12" fill="white">
-                    <tspan>🤖</tspan>
-                  </text>
-                </g>
+              <!-- 模拟路径 -->
+              <svg class="absolute inset-0 w-full h-full pointer-events-none">
+                <path
+                  d="M 180 380 L 220 380 L 220 250 L 280 250 L 280 450 L 380 450"
+                  stroke="#4080FF"
+                  stroke-width="2"
+                  stroke-dasharray="6,4"
+                  fill="none"
+                  opacity="0.8"
+                ></path>
               </svg>
+
+              <!-- 路径点标记 -->
+              <div
+                class="absolute left-[180px] top-[380px] w-3 h-3 bg-success rounded-full"
+              ></div>
+              <div
+                class="absolute left-[220px] top-[380px] w-3 h-3 bg-primary rounded-full"
+              ></div>
+              <div
+                class="absolute left-[220px] top-[250px] w-3 h-3 bg-primary rounded-full"
+              ></div>
+              <div
+                class="absolute left-[280px] top-[250px] w-3 h-3 bg-primary rounded-full"
+              ></div>
+              <div
+                class="absolute left-[280px] top-[450px] w-3 h-3 bg-primary rounded-full"
+              ></div>
+              <div
+                class="absolute left-[380px] top-[450px] w-3 h-3 bg-warning rounded-full"
+              ></div>
+
+              <!-- AGV小车 -->
+              <div
+                id="agvCar"
+                class="absolute left-[280px] top-[250px] w-8 h-8 transition-all duration-1000 ease-linear float-animation"
+              >
+                <div
+                  class="w-full h-full bg-primary rounded-lg shadow flex items-center justify-center"
+                >
+                  <i class="fa fa-truck text-white"></i>
+                </div>
+              </div>
 
               <!-- 地图中心文字 -->
               <div
@@ -937,26 +799,16 @@
                     <span id="posY" class="font-medium">20.01</span>
                   </div>
                   <div class="flex justify-between">
-                    <span class="text-gray-dark">地图匹配度
-                      <span class="text-warning cursor-help" title="表示当前位置与地图的匹配程度，数值越高定位越准确">!</span>
-                    </span>
-                    <span id="map-match" class="font-medium text-success">95%</span>
-                  </div>
-                  <div class="flex justify-between">
                     <span class="text-gray-dark">底盘状态</span>
-                    <span id="chassis-status" class="text-success font-medium">空闲</span>
+                    <span class="text-success font-medium">正常</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-gray-dark">速度</span>
                     <span id="speed" class="font-medium">0.5 m/s</span>
                   </div>
                   <div class="flex justify-between">
-                    <span class="text-gray-dark">角速度</span>
-                    <span id="angular-velocity" class="font-medium">0.0°/s</span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-gray-dark">电池温度</span>
-                    <span id="battery-temp" class="font-medium">28°C</span>
+                    <span class="text-gray-dark">角度</span>
+                    <span id="angle" class="font-medium">90.0°</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-gray-dark">电流</span>
@@ -987,13 +839,6 @@
                     <span class="text-success flex items-center gap-1">
                       <span class="w-2 h-2 bg-success rounded-full"></span>
                       已连接
-                    </span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-gray-dark">IMU传感器</span>
-                    <span class="text-success flex items-center gap-1">
-                      <span class="w-2 h-2 bg-success rounded-full"></span>
-                      在线
                     </span>
                   </div>
                   <div class="flex justify-between">
@@ -1072,36 +917,189 @@
         <footer
           class="bg-white border-t border-gray-200 px-4 py-2 flex items-center justify-between text-sm flex-shrink-0"
         >
-          <div class="flex items-center gap-6">
-            <div class="flex items-center gap-2">
-              <span class="text-gray-dark">电池电量:</span>
-              <div class="w-24 h-3 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  id="batteryBar"
-                  class="h-full bg-success transition-all duration-500"
-                  style="width: 82%"
-                ></div>
-              </div>
-              <span id="batteryText" class="font-medium">82%</span>
+          <div class="flex items-center gap-2">
+            <span class="text-gray-dark">电池电量:</span>
+            <div class="w-24 h-3 bg-gray-200 rounded-full overflow-hidden">
+              <div
+                id="batteryBar"
+                class="h-full bg-success transition-all duration-500"
+                style="width: 82%"
+              ></div>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="text-gray-dark">错误码:</span>
-              <span id="error-code" class="font-medium text-success">0</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-gray-dark">当前地图:</span>
-              <span id="current-map-name" class="font-medium">主地图 v2.1</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-gray-dark">固件版本:</span>
-              <span id="firmware-version" class="font-medium">v3.2.5</span>
-            </div>
+            <span id="batteryText" class="font-medium">82%</span>
           </div>
           <div class="text-gray-dark">
-            AGV OS v2.0.0 | 系统运行时间: <span id="uptime">02:21:16</span>
+            AGV OS v1.8.0 | 系统运行时间: <span id="uptime">02:21:16</span>
           </div>
         </footer>
 
+        <!-- 小车状态管理栏 -->
+        <div
+          class="bg-gray-50 h-46 border-t border-gray-200 overflow-x-auto scrollbar-hide flex-shrink-0"
+        >
+          <div class="flex gap-2 p-2 min-w-max">
+            <!-- 小车1：在线机器人 -->
+            <div
+              class="w-48 bg-card-bg rounded-lg p-2 flex-shrink-0 shadow-sm hover:shadow-md transition-all"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-1">
+                  <span
+                    class="w-2 h-2 bg-success rounded-full pulse-animation"
+                  ></span>
+                  <span class="text-dark text-sm font-medium">在线</span>
+                </div>
+                <span class="text-gray-400 text-xs">机器人</span>
+              </div>
+              <div class="text-gray-dark text-xs mb-1">
+                <i class="fa fa-globe text-primary"></i>
+                58.34.177.162
+              </div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-gray-dark text-xs">电量</span>
+                <div
+                  class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden"
+                >
+                  <div class="h-full bg-success" style="width: 82%"></div>
+                </div>
+                <span class="text-xs">82%</span>
+              </div>
+              <div class="text-gray-500 text-xs mb-1">
+                地图: default.test.1.2.6(1)
+              </div>
+              <div class="text-gray-500 text-xs mb-1">名称: RD-TEST-2</div>
+              <div class="text-gray-500 text-xs mb-2">版本: v3.3.6.3_86_64</div>
+              <div class="flex justify-end">
+                <button
+                  class="px-3 py-1 bg-primary text-white text-xs rounded hover:bg-primary/90 transition-all"
+                >
+                  开始连接
+                </button>
+              </div>
+            </div>
+
+            <!-- 小车2：在线网络 -->
+            <div
+              class="w-48 bg-card-bg rounded-lg p-2 flex-shrink-0 shadow-sm hover:shadow-md transition-all"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-1">
+                  <span
+                    class="w-2 h-2 bg-danger rounded-full pulse-animation"
+                  ></span>
+                  <span class="text-dark text-sm font-medium">在线</span>
+                </div>
+                <span class="text-gray-400 text-xs">网络</span>
+              </div>
+              <div class="text-gray-dark text-xs mb-1">
+                <i class="fa fa-globe text-primary"></i>
+                58.34.177.164
+              </div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-gray-dark text-xs">电量</span>
+                <div
+                  class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden"
+                >
+                  <div class="h-full bg-gray-400" style="width: 100%"></div>
+                </div>
+                <span class="text-xs">--</span>
+              </div>
+              <div class="text-gray-500 text-xs mb-1">
+                版本: 0.1.6.220426/x86_64
+              </div>
+              <div class="text-gray-500 text-xs mb-2">备注: RDSCore</div>
+              <div class="flex justify-end">
+                <button
+                  class="px-3 py-1 bg-gray-200 text-gray-500 text-xs rounded cursor-not-allowed"
+                >
+                  开始连接
+                </button>
+              </div>
+            </div>
+
+            <!-- 小车3：离线机器人 -->
+            <div
+              class="w-48 bg-card-bg rounded-lg p-2 flex-shrink-0 shadow-sm hover:shadow-md transition-all opacity-70"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-1">
+                  <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+                  <span class="text-dark text-sm font-medium">离线</span>
+                </div>
+                <span class="text-gray-400 text-xs">机器人</span>
+              </div>
+              <div class="text-gray-dark text-xs mb-1">
+                <i class="fa fa-globe text-gray-400"></i>
+                58.34.177.162
+              </div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-gray-dark text-xs">电量</span>
+                <div
+                  class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden"
+                >
+                  <div class="h-full bg-gray-400" style="width: 100%"></div>
+                </div>
+                <span class="text-xs">--</span>
+              </div>
+              <div class="text-gray-500 text-xs mb-1">
+                地图: default.test.1.2.6(1)
+              </div>
+              <div class="text-gray-500 text-xs mb-1">名称: RD-TEST-2</div>
+              <div class="text-gray-500 text-xs mb-2">版本: v3.3.6.3_86_64</div>
+              <div class="flex justify-end">
+                <button
+                  class="px-3 py-1 bg-gray-200 text-gray-500 text-xs rounded cursor-not-allowed"
+                >
+                  开始连接
+                </button>
+              </div>
+            </div>
+
+            <!-- 小车4：离线机器人 -->
+            <div
+              class="w-48 bg-card-bg rounded-lg p-2 flex-shrink-0 shadow-sm hover:shadow-md transition-all opacity-70"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-1">
+                  <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+                  <span class="text-dark text-sm font-medium">离线</span>
+                </div>
+                <span class="text-gray-400 text-xs">机器人</span>
+              </div>
+              <div class="text-gray-dark text-xs mb-1">
+                <i class="fa fa-globe text-gray-400"></i>
+                111.111.111.111
+              </div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-gray-dark text-xs">电量</span>
+                <div
+                  class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden"
+                >
+                  <div class="h-full bg-gray-400" style="width: 100%"></div>
+                </div>
+                <span class="text-xs">--</span>
+              </div>
+              <div class="text-gray-500 text-xs mb-2">备注: 未同步</div>
+              <div class="flex justify-end">
+                <button
+                  class="px-3 py-1 bg-gray-200 text-gray-500 text-xs rounded cursor-not-allowed"
+                >
+                  开始连接
+                </button>
+              </div>
+            </div>
+
+            <!-- 添加小车按钮 -->
+            <div
+              class="w-48 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-2 flex-shrink-0 hover:border-primary/50 transition-all flex items-center justify-center cursor-pointer"
+            >
+              <div class="text-center">
+                <i class="fa fa-plus text-gray-400 text-2xl mb-1"></i>
+                <div class="text-gray-400 text-sm">添加新小车</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 2. 新建地图页面 -->
@@ -1184,6 +1182,16 @@
               <i class="fa fa-save"></i>保存
             </button>
             <button
+              class="bg-map-control hover:bg-map-control/80 text-gray-700 px-3 py-1 rounded text-sm flex items-center gap-1 transition"
+            >
+              <i class="fa fa-download"></i>导出
+            </button>
+            <button
+              class="bg-map-control hover:bg-map-control/80 text-gray-700 px-3 py-1 rounded text-sm flex items-center gap-1 transition"
+            >
+              <i class="fa fa-trash"></i>清除
+            </button>
+            <button
               class="bg-warning hover:bg-warning/90 text-white px-3 py-1 rounded text-sm flex items-center gap-1 transition"
             >
               <i class="fa fa-stop"></i>停止建图
@@ -1235,6 +1243,86 @@
           <section
             class="flex-1 bg-white m-2 rounded shadow-sm overflow-hidden relative"
           >
+            <!-- 新增：勾选字段容器 -->
+            <div class="checkbox-field-container absolute top-4 left-4">
+              <div class="checkbox-field-title">
+                <i class="fa fa-check-square-o text-primary"></i>
+                显示字段
+              </div>
+              <div class="checkbox-field-grid">
+                <!-- 全选 -->
+                <label class="checkbox-field-item">
+                  <input
+                    type="checkbox"
+                    id="mapping-select-all"
+                    class="accent-primary w-4 h-4"
+                  />
+                  <span>全选</span>
+                </label>
+                <!-- 点 -->
+                <label class="checkbox-field-item">
+                  <input
+                    type="checkbox"
+                    class="mapping-field-checkbox accent-primary w-4 h-4"
+                    checked
+                  />
+                  <span>点</span>
+                </label>
+                <!-- 手绘路径 -->
+                <label class="checkbox-field-item">
+                  <input
+                    type="checkbox"
+                    class="mapping-field-checkbox accent-primary w-4 h-4"
+                    checked
+                  />
+                  <span>手绘路径</span>
+                </label>
+                <!-- 虚拟墙 -->
+                <label class="checkbox-field-item">
+                  <input
+                    type="checkbox"
+                    class="mapping-field-checkbox accent-primary w-4 h-4"
+                    checked
+                  />
+                  <span>虚拟墙</span>
+                </label>
+                <!-- 手绘轨道 -->
+                <label class="checkbox-field-item">
+                  <input
+                    type="checkbox"
+                    class="mapping-field-checkbox accent-primary w-4 h-4"
+                    checked
+                  />
+                  <span>手绘轨道</span>
+                </label>
+                <!-- GPS -->
+                <label class="checkbox-field-item">
+                  <input
+                    type="checkbox"
+                    class="mapping-field-checkbox accent-primary w-4 h-4"
+                  />
+                  <span>GPS</span>
+                </label>
+                <!-- 停车位 -->
+                <label class="checkbox-field-item">
+                  <input
+                    type="checkbox"
+                    class="mapping-field-checkbox accent-primary w-4 h-4"
+                  />
+                  <span>停车位</span>
+                </label>
+                <!-- 网格 -->
+                <label class="checkbox-field-item">
+                  <input
+                    type="checkbox"
+                    class="mapping-field-checkbox accent-primary w-4 h-4"
+                    checked
+                  />
+                  <span>网格</span>
+                </label>
+              </div>
+            </div>
+
             <!-- 室内激光地图背景 -->
             <div class="w-full h-full relative laser-map-bg">
               <!-- 激光扫描动画效果 -->
@@ -1328,22 +1416,28 @@
                 class="font-bold text-gray-700 mb-3 text-sm flex items-center gap-1"
               >
                 <i class="fa fa-sliders text-primary"></i>
-               回环距离
+                建图参数
               </h3>
-              <div class="space-y-3 text-xs">
-                <div>
-                  <div class="flex justify-between items-center mb-1">
-                    <span class="text-gray-deep">回环距离
-                      <span class="text-warning cursor-help" title="检测回环的距离阈值，值越小越容易检测到回环">!</span>
-                    </span>
-                  </div>
-                  <input
-                    type="number"
-                    step="0.1"
-                    value="1.0"
-                    class="w-full px-2 py-1 border border-gray-light rounded focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  />
-                  <!-- <span class="text-gray-deep text-xs">m</span> -->
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-deep">分辨率</span>
+                  <span class="text-gray-700">0.05 m</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-deep">地图大小</span>
+                  <span class="text-gray-700">10.0 x 10.0 m</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-deep">激光频率</span>
+                  <span class="text-gray-700">10 Hz</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-deep">最大距离</span>
+                  <span class="text-gray-700">15.0 m</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-deep">最小距离</span>
+                  <span class="text-gray-700">0.1 m</span>
                 </div>
               </div>
             </div>
@@ -1564,123 +1658,6 @@
         </footer>
       </div>
 
-      <!-- 4.5 初始定位页面 -->
-      <div
-        id="initial-location-page"
-        class="hidden bg-map-bg min-h-screen flex flex-col"
-      >
-        <!-- 顶部导航 -->
-        <header
-          class="bg-white shadow-sm px-6 py-3 flex items-center justify-between"
-        >
-          <div class="flex items-center gap-3">
-            <button
-              onclick="switchPage('main-page')"
-              class="flex items-center gap-2 text-primary hover:text-primary/80 transition"
-            >
-              <i class="fa fa-arrow-left"></i>
-              <span>返回</span>
-            </button>
-            <h1 class="text-xl font-bold text-gray-800">初始定位</h1>
-          </div>
-          <div class="flex items-center gap-3">
-            <label class="flex items-center gap-2 text-sm">
-              <span class="text-gray-dark">定点启动</span>
-              <input type="checkbox" id="fixed-start-toggle" class="accent-primary w-4 h-4" />
-            </label>
-          </div>
-        </header>
-
-        <!-- 主内容区域 -->
-        <main class="flex-1 flex overflow-hidden">
-          <!-- 左侧地图区域 -->
-          <section class="flex-1 relative grid-bg overflow-auto">
-            <!-- 模拟地图 -->
-            <div class="absolute inset-0 p-8">
-              <div class="w-full h-full border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-white/50">
-                <span class="text-gray-400">地图区域</span>
-              </div>
-            </div>
-          </section>
-
-          <!-- 右侧控制面板 -->
-          <aside class="w-80 bg-white border-l border-gray-light p-4 overflow-y-auto">
-            <!-- 手动定位 -->
-            <div class="mb-6">
-              <h3 class="font-semibold text-dark mb-3 flex items-center gap-2">
-                <i class="fa fa-hand-pointer-o text-primary"></i>
-                手动定位
-              </h3>
-              <div class="space-y-3">
-                <button
-                  class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center gap-2"
-                >
-                  <i class="fa fa-map-marker"></i>
-                  初始化位置设置
-                </button>
-                <button
-                  class="w-full py-2 bg-success text-white rounded hover:bg-success/90 transition flex items-center justify-center gap-2"
-                >
-                  <i class="fa fa-refresh"></i>
-                  重定位
-                </button>
-              </div>
-            </div>
-
-            <!-- 选点定位 -->
-            <div class="mb-6">
-              <h3 class="font-semibold text-dark mb-3 flex items-center gap-2">
-                <i class="fa fa-list text-primary"></i>
-                选点定位
-              </h3>
-              <div class="space-y-3">
-                <select class="w-full px-3 py-2 border border-gray-light rounded focus:outline-none focus:ring-2 focus:ring-primary/50">
-                  <option>P001 - 入库口</option>
-                  <option>P002 - 分拣区</option>
-                  <option>P003 - 充电位</option>
-                  <option>P004 - 仓储区A</option>
-                </select>
-                <button
-                  class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center gap-2"
-                >
-                  <i class="fa fa-check"></i>
-                  确认定位
-                </button>
-                <div class="bg-gray-50 p-3 rounded text-sm text-gray-dark">
-                  <div class="flex items-center gap-2 mb-2">
-                    <i class="fa fa-info-circle text-primary"></i>
-                    <span class="font-medium">定位反馈</span>
-                  </div>
-                  <p>等待定位...</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- 停车点定位 -->
-            <div>
-              <h3 class="font-semibold text-dark mb-3 flex items-center gap-2">
-                <i class="fa fa-parking text-primary"></i>
-                停车点定位
-              </h3>
-              <div class="space-y-3">
-                <div class="text-sm text-gray-deep mb-2">
-                  设置停车位（唯一点位），开机和关机时小车都要在这个点
-                </div>
-                <select class="w-full px-3 py-2 border border-gray-light rounded focus:outline-none focus:ring-2 focus:ring-primary/50">
-                  <option>P003 - 充电位</option>
-                  <option>P001 - 入库口</option>
-                  <option>P002 - 分拣区</option>
-                </select>
-                <div class="flex items-center justify-between bg-success/10 p-2 rounded text-sm">
-                  <span class="text-success">当前停车位: P003</span>
-                  <i class="fa fa-check-circle text-success"></i>
-                </div>
-              </div>
-            </div>
-          </aside>
-        </main>
-      </div>
-
       <!-- 5. 点管理页面 -->
       <div
         id="point-manage-page"
@@ -1896,7 +1873,7 @@
           </section>
 
           <!-- 右侧筛选和设备状态栏 -->
-          <aside style="height: 70%;"
+          <aside
             class="w-64 bg-white shadow-sm flex flex-col shrink-0 p-4 overflow-y-auto"
           >
             <!-- 显示字段筛选 -->
@@ -1951,7 +1928,15 @@
                   />
                   <span>全选</span>
                 </label>
-               
+                <!-- 点 -->
+                <label class="checkbox-field-item">
+                  <input
+                    type="checkbox"
+                    class="point-field-checkbox accent-primary w-4 h-4"
+                    checked
+                  />
+                  <span>点</span>
+                </label>
                 <!-- 手绘路径 -->
                 <label class="checkbox-field-item">
                   <input
@@ -1977,7 +1962,22 @@
                   />
                   <span>充电点</span>
                 </label>
-               
+                <label class="checkbox-field-item">
+                  <input
+                    type="checkbox"
+                    class="point-field-checkbox accent-primary w-4 h-4"
+                    checked
+                  />
+                  <span>巡检点</span>
+                </label>
+                <label class="checkbox-field-item">
+                  <input
+                    type="checkbox"
+                    class="point-field-checkbox accent-primary w-4 h-4"
+                    checked
+                  />
+                  <span>关联点</span>
+                </label>
                 <label class="checkbox-field-item">
                   <input
                     type="checkbox"
@@ -2004,8 +2004,22 @@
                   />
                   <span>手绘轨道</span>
                 </label>
-              
-            
+                <!-- GPS -->
+                <label class="checkbox-field-item">
+                  <input
+                    type="checkbox"
+                    class="point-field-checkbox accent-primary w-4 h-4"
+                  />
+                  <span>GPS</span>
+                </label>
+                <!-- 停车位 -->
+                <label class="checkbox-field-item">
+                  <input
+                    type="checkbox"
+                    class="point-field-checkbox accent-primary w-4 h-4"
+                  />
+                  <span>停车位</span>
+                </label>
                 <!-- 网格 -->
                 <label class="checkbox-field-item">
                   <input
@@ -2074,77 +2088,6 @@
                 <div class="flex justify-between">
                   <span class="text-gray-deep">故障点位</span>
                   <span class="text-danger">0</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- 点位管理面板 -->
-            <div class="bg-white rounded border border-gray-light p-3 mb-4">
-              <h3 class="font-bold mb-3 flex items-center justify-between">
-                <span class="flex items-center gap-1">
-                  <i class="fa fa-list text-primary"></i>
-                  点位管理
-                </span>
-                <button class="text-xs text-primary hover:text-primary/80">
-                  <i class="fa fa-plus"></i> 新增
-                </button>
-              </h3>
-              <div class="space-y-2 max-h-48 overflow-y-auto">
-                <div class="flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
-                  <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 bg-primary rounded-full"></div>
-                    <span>P101 - 入库口</span>
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <button class="text-gray-400 hover:text-primary">
-                      <i class="fa fa-edit"></i>
-                    </button>
-                    <button class="text-gray-400 hover:text-danger">
-                      <i class="fa fa-trash"></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
-                  <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 bg-success rounded-full"></div>
-                    <span>P102 - 分拣区</span>
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <button class="text-gray-400 hover:text-primary">
-                      <i class="fa fa-edit"></i>
-                    </button>
-                    <button class="text-gray-400 hover:text-danger">
-                      <i class="fa fa-trash"></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
-                  <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 bg-warning rounded-full"></div>
-                    <span>P103 - 充电位</span>
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <button class="text-gray-400 hover:text-primary">
-                      <i class="fa fa-edit"></i>
-                    </button>
-                    <button class="text-gray-400 hover:text-danger">
-                      <i class="fa fa-trash"></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
-                  <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 bg-primary rounded-full"></div>
-                    <span>P201 - 仓储区A</span>
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <button class="text-gray-400 hover:text-primary">
-                      <i class="fa fa-edit"></i>
-                    </button>
-                    <button class="text-gray-400 hover:text-danger">
-                      <i class="fa fa-trash"></i>
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
@@ -2223,14 +2166,6 @@
           <!-- 任务按钮组 -->
           <div class="flex items-center gap-3">
             <button
-              id="path-record-btn"
-              onclick="togglePathRecording()"
-              class="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded flex items-center gap-1 transition"
-            >
-              <i class="fa fa-circle"></i>
-              <span>开始录制</span>
-            </button>
-            <button
               class="bg-success hover:bg-success/90 text-white px-4 py-1.5 rounded flex items-center gap-1 transition"
             >
               <i class="fa fa-play"></i>
@@ -2242,6 +2177,52 @@
               <i class="fa fa-pause"></i>
               <span>结束/暂停</span>
             </button>
+            <!-- 任务管理 + 悬浮窗 -->
+            <div class="relative dropdown-trigger">
+              <button
+                class="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded flex items-center gap-1 transition"
+              >
+                <i class="fa fa-tasks"></i>
+                <span>任务管理</span>
+                <i class="fa fa-caret-down text-xs"></i>
+              </button>
+              <!-- 任务参数悬浮窗 -->
+              <div class="dropdown-menu text-sm space-y-2">
+                <h4 class="font-bold text-primary mb-2">导航参数设置</h4>
+                <div class="flex items-center justify-between">
+                  <span>循环执行</span>
+                  <input type="checkbox" class="accent-primary w-4 h-4" />
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>沿轨道行驶</span>
+                  <input type="checkbox" class="accent-primary w-4 h-4" />
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>定时任务</span>
+                  <input type="checkbox" class="accent-primary w-4 h-4" />
+                </div>
+                <div class="space-y-1 mt-2">
+                  <label class="text-gray-deep text-xs">定时时间</label>
+                  <input
+                    type="datetime-local"
+                    class="w-full border border-gray-light rounded px-2 py-1 text-xs"
+                  />
+                </div>
+                <div class="space-y-1 mt-2">
+                  <label class="text-gray-deep text-xs">导航速度</label>
+                  <input
+                    type="number"
+                    placeholder="0.5m/s"
+                    class="w-full border border-gray-light rounded px-2 py-1 text-xs"
+                  />
+                </div>
+                <button
+                  class="w-full bg-primary text-white py-1 rounded text-xs mt-2 hover:bg-primary/90"
+                >
+                  保存设置
+                </button>
+              </div>
+            </div>
           </div>
           <div class="flex items-center gap-2">
             <button
@@ -2260,13 +2241,12 @@
         <!-- 主内容 -->
         <main class="flex-1 flex overflow-hidden">
           <!-- 左侧地图绘制区域 -->
-          <section id="path-map-area" class="flex-1 relative grid-bg overflow-auto" style="cursor: crosshair;">
+          <section class="flex-1 relative grid-bg overflow-auto">
             <!-- 路径示例点位 -->
             <!-- 起点 P101 -->
             <div
               class="map-point map-point-start"
               style="left: 100px; top: 200px"
-              data-point-id="P101"
             ></div>
             <div class="map-point-text" style="left: 100px; top: 200px">
               P101(起点)
@@ -2275,163 +2255,88 @@
             <!-- 普通点 P102 -->
             <div
               class="map-point map-point-normal"
-              style="left: 180px; top: 200px"
-              data-point-id="P102"
+              style="left: 130px; top: 200px"
             ></div>
-            <div class="map-point-text" style="left: 180px; top: 200px">
+            <div class="map-point-text" style="left: 130px; top: 200px">
               P102
             </div>
 
             <!-- 普通点 P103 -->
             <div
               class="map-point map-point-normal"
-              style="left: 180px; top: 130px"
-              data-point-id="P103"
+              style="left: 130px; top: 150px"
             ></div>
-            <div class="map-point-text" style="left: 180px; top: 130px">
+            <div class="map-point-text" style="left: 130px; top: 150px">
               P103
             </div>
 
             <!-- 普通点 P104 -->
             <div
               class="map-point map-point-normal"
-              style="left: 280px; top: 130px"
-              data-point-id="P104"
+              style="left: 160px; top: 150px"
             ></div>
-            <div class="map-point-text" style="left: 280px; top: 130px">
+            <div class="map-point-text" style="left: 160px; top: 150px">
               P104
             </div>
 
             <!-- 普通点 P105 -->
             <div
               class="map-point map-point-normal"
-              style="left: 280px; top: 260px"
-              data-point-id="P105"
+              style="left: 160px; top: 250px"
             ></div>
-            <div class="map-point-text" style="left: 280px; top: 260px">
+            <div class="map-point-text" style="left: 160px; top: 250px">
               P105
             </div>
 
             <!-- 终点 P106 -->
             <div
               class="map-point map-point-end"
-              style="left: 380px; top: 260px"
-              data-point-id="P106"
+              style="left: 200px; top: 250px"
             ></div>
-            <div class="map-point-text" style="left: 380px; top: 260px">
+            <div class="map-point-text" style="left: 200px; top: 250px">
               P106(终点)
             </div>
 
-            <!-- 路径线 SVG -->
-            <svg id="path-svg" class="absolute inset-0 w-full h-full">
-              <defs>
-                <marker id="path-arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                  <polygon points="0 0, 10 3.5, 0 7" fill="#409eff" />
-                </marker>
-              </defs>
-              <!-- 路径1：单线（蓝色带箭头） -->
+            <!-- 主路径线 -->
+            <svg class="absolute inset-0 w-full h-full pointer-events-none">
               <path
-                id="path-1"
-                d="M100,200 Q140,200 180,200"
+                d="M100,200 L130,200 L130,150 L160,150 L160,250 L200,250"
                 stroke="#409eff"
-                stroke-width="3"
+                stroke-width="2"
+                stroke-dasharray="4 2"
                 fill="none"
-                marker-end="url(#path-arrow)"
-                data-direction="single"
-                class="cursor-pointer"
               />
-              <!-- 路径2：双向（绿色虚线） -->
+              <!-- 备用路径 -->
               <path
-                id="path-2"
-                d="M180,200 Q180,165 180,130"
-                stroke="#67c23a"
-                stroke-width="3"
+                d="M100,200 L160,150 L200,250"
+                stroke="#f56c6c"
+                stroke-width="1.5"
+                stroke-dasharray="2 2"
                 fill="none"
-                stroke-dasharray="8,4"
-                data-direction="bidirectional"
-                class="cursor-pointer"
+                opacity="0.7"
               />
-              <!-- 路径3：单线（蓝色带箭头）带曲线 -->
-              <path
-                id="path-3"
-                d="M180,130 Q230,130 280,130"
-                stroke="#409eff"
-                stroke-width="3"
-                fill="none"
-                marker-end="url(#path-arrow)"
-                data-direction="single"
-                class="cursor-pointer"
-              />
-              <!-- 路径4：双向（绿色虚线） -->
-              <path
-                id="path-4"
-                d="M280,130 Q280,195 280,260"
-                stroke="#67c23a"
-                stroke-width="3"
-                fill="none"
-                stroke-dasharray="8,4"
-                data-direction="bidirectional"
-                class="cursor-pointer"
-              />
-              <!-- 路径5：单线（蓝色带箭头） -->
-              <path
-                id="path-5"
-                d="M280,260 Q330,260 380,260"
-                stroke="#409eff"
-                stroke-width="3"
-                fill="none"
-                marker-end="url(#path-arrow)"
-                data-direction="single"
-                class="cursor-pointer"
-              />
-              <!-- 曲度控制点（显示为黄色小点） -->
-              <circle id="curve-ctrl-1" cx="140" cy="200" r="6" fill="#e6a23c" stroke="#fff" stroke-width="2" class="cursor-move" style="display: none;" />
-              <circle id="curve-ctrl-2" cx="180" cy="165" r="6" fill="#e6a23c" stroke="#fff" stroke-width="2" class="cursor-move" style="display: none;" />
-              <circle id="curve-ctrl-3" cx="230" cy="130" r="6" fill="#e6a23c" stroke="#fff" stroke-width="2" class="cursor-move" style="display: none;" />
-              <circle id="curve-ctrl-4" cx="280" cy="195" r="6" fill="#e6a23c" stroke="#fff" stroke-width="2" class="cursor-move" style="display: none;" />
-              <circle id="curve-ctrl-5" cx="330" cy="260" r="6" fill="#e6a23c" stroke="#fff" stroke-width="2" class="cursor-move" style="display: none;" />
             </svg>
 
-            <!-- 路径编辑工具条 -->
+            <!-- 右上角路径编辑按钮组 -->
             <div
-              class="absolute top-4 right-80 flex items-center gap-2 bg-white p-2 rounded border border-gray-light shadow-lg"
+              class="absolute top-4 right-80 flex items-center gap-2 bg-white p-1 rounded border border-gray-light"
             >
               <span class="text-xs text-gray-deep mr-2">路径编辑</span>
               <button
-                onclick="toggleAddMode()"
-                class="w-7 h-7 rounded bg-primary text-white flex items-center justify-center text-sm"
-                title="添加路径"
+                class="w-6 h-6 rounded bg-primary text-white flex items-center justify-center text-xs"
               >
-                <i class="fa fa-plus"></i>
+                +
               </button>
               <button
-                onclick="toggleEditMode()"
-                class="w-7 h-7 rounded bg-warning text-white flex items-center justify-center text-sm"
-                title="编辑路径"
+                class="w-6 h-6 rounded bg-warning text-white flex items-center justify-center text-xs"
               >
-                <i class="fa fa-pencil"></i>
+                ✎
               </button>
               <button
-                onclick="toggleCurveMode()"
-                class="w-7 h-7 rounded bg-secondary text-white flex items-center justify-center text-sm"
-                title="调整曲度"
+                class="w-6 h-6 rounded bg-danger text-white flex items-center justify-center text-xs"
               >
-                <i class="fa fa-sliders"></i>
+                −
               </button>
-              <button
-                class="w-7 h-7 rounded bg-danger text-white flex items-center justify-center text-sm"
-                title="删除路径"
-              >
-                <i class="fa fa-trash"></i>
-              </button>
-            </div>
-
-            <!-- 录制状态提示 -->
-            <div
-              id="record-status"
-              class="absolute top-20 left-1/2 -translate-x-1/2 bg-danger/90 text-white px-4 py-2 rounded shadow-lg text-sm hidden"
-            >
-              <i class="fa fa-circle text-xs animate-pulse mr-2"></i>正在录制路径... 点击添加点，双击结束
             </div>
           </section>
 
@@ -2466,14 +2371,31 @@
                     checked
                     class="accent-primary w-3 h-3"
                   />
-                  <span>路径</span>
+                  <span>手绘路径</span>
                 </label>
                 <label class="flex items-center gap-2 text-xs">
                   <input
                     type="checkbox"
+                    checked
                     class="accent-primary w-3 h-3"
                   />
-                  <span>曲度控制点</span>
+                  <span>虚拟墙</span>
+                </label>
+                <label class="flex items-center gap-2 text-xs">
+                  <input
+                    type="checkbox"
+                    checked
+                    class="accent-primary w-3 h-3"
+                  />
+                  <span>手绘轨道</span>
+                </label>
+                <label class="flex items-center gap-2 text-xs">
+                  <input type="checkbox" class="accent-primary w-3 h-3" />
+                  <span>GPS</span>
+                </label>
+                <label class="flex items-center gap-2 text-xs">
+                  <input type="checkbox" class="accent-primary w-3 h-3" />
+                  <span>停车位</span>
                 </label>
                 <label class="flex items-center gap-2 text-xs">
                   <input
@@ -2483,78 +2405,6 @@
                   />
                   <span>网格</span>
                 </label>
-              </div>
-            </div>
-
-            <!-- 路径编辑面板 -->
-            <div class="panel-card">
-              <div class="panel-title">
-                <i class="fa fa-sliders text-primary"></i>
-                路径属性设置
-              </div>
-              <div class="space-y-3">
-                <div class="space-y-1">
-                  <label class="text-xs text-gray-deep">路径名称</label>
-                  <input
-                    type="text"
-                    value="PA001"
-                    class="w-full border border-gray-light rounded px-2 py-1.5 text-xs"
-                  />
-                </div>
-                <div class="space-y-1">
-                  <label class="text-xs text-gray-deep">路径方向</label>
-                  <div class="flex gap-2">
-                    <button
-                      id="dir-single-btn"
-                      onclick="setPathDirection('single')"
-                      class="flex-1 px-2 py-1 rounded text-xs bg-primary text-white"
-                    >
-                      单线
-                    </button>
-                    <button
-                      id="dir-bidirectional-btn"
-                      onclick="setPathDirection('bidirectional')"
-                      class="flex-1 px-2 py-1 rounded text-xs bg-gray-200 text-gray-700"
-                    >
-                      双向
-                    </button>
-                  </div>
-                </div>
-                <div class="space-y-1">
-                  <label class="text-xs text-gray-deep">曲度值</label>
-                  <div class="flex items-center gap-2">
-                    <input
-                      id="curve-slider"
-                      type="range"
-                      min="0"
-                      max="100"
-                      value="50"
-                      class="flex-1"
-                    />
-                    <span id="curve-value" class="text-xs w-8 text-right">50</span>
-                  </div>
-                </div>
-                <div class="space-y-1">
-                  <label class="text-xs text-gray-deep">路径颜色</label>
-                  <div class="flex gap-2">
-                    <button
-                      class="w-7 h-7 rounded bg-primary"
-                      data-color="#409eff"
-                    ></button>
-                    <button
-                      class="w-7 h-7 rounded bg-success"
-                      data-color="#67c23a"
-                    ></button>
-                    <button
-                      class="w-7 h-7 rounded bg-warning"
-                      data-color="#e6a23c"
-                    ></button>
-                    <button
-                      class="w-7 h-7 rounded bg-danger"
-                      data-color="#f56c6c"
-                    ></button>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -2578,8 +2428,8 @@
                   <span class="stats-value">6个</span>
                 </div>
                 <div class="stats-item">
-                  <span>路径类型</span>
-                  <span class="stats-value text-primary">单线</span>
+                  <span>路径状态</span>
+                  <span class="stats-value text-success">正常</span>
                 </div>
                 <div class="stats-item">
                   <span>导航速度</span>
@@ -2604,16 +2454,16 @@
                   <span class="stats-value">8</span>
                 </div>
                 <div class="stats-item">
-                  <span>单线路径</span>
-                  <span class="stats-value text-primary">5</span>
-                </div>
-                <div class="stats-item">
-                  <span>双向路径</span>
-                  <span class="stats-value text-success">3</span>
-                </div>
-                <div class="stats-item">
                   <span>已激活</span>
                   <span class="stats-value text-success">6</span>
+                </div>
+                <div class="stats-item">
+                  <span>未启用</span>
+                  <span class="stats-value text-warning">2</span>
+                </div>
+                <div class="stats-item">
+                  <span>故障路径</span>
+                  <span class="stats-value text-danger">0</span>
                 </div>
               </div>
             </div>
@@ -2650,7 +2500,7 @@
         >
           <div class="flex items-center gap-2">
             <i class="fa fa-circle text-success text-xs"></i>
-            <span>路径管理状态：正常 | 已选择路径: 0个 | 模式：查看</span>
+            <span>路径管理状态：正常 | 已选择路径: 0个</span>
           </div>
           <div>
             <span>当前地图: 主地图 v2.1 | 最后更新:2024-05-20 16:48:20</span>
@@ -2692,14 +2542,58 @@
               <i class="fa fa-pause"></i>
               <span>结束/暂停</span>
             </button>
+            <!-- 任务管理 + 悬浮窗 -->
+            <div class="relative dropdown-trigger">
+              <button
+                class="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded flex items-center gap-1 transition"
+              >
+                <i class="fa fa-tasks"></i>
+                <span>任务管理</span>
+                <i class="fa fa-caret-down text-xs"></i>
+              </button>
+              <!-- 任务参数悬浮窗 -->
+              <div class="dropdown-menu text-sm space-y-2">
+                <h4 class="font-bold text-primary mb-2">导航参数设置</h4>
+                <div class="flex items-center justify-between">
+                  <span>循环执行</span>
+                  <input type="checkbox" class="accent-primary w-4 h-4" />
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>沿轨道行驶</span>
+                  <input type="checkbox" class="accent-primary w-4 h-4" />
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>定时任务</span>
+                  <input type="checkbox" class="accent-primary w-4 h-4" />
+                </div>
+                <div class="space-y-1 mt-2">
+                  <label class="text-gray-deep text-xs">定时时间</label>
+                  <input
+                    type="datetime-local"
+                    class="w-full border border-gray-light rounded px-2 py-1 text-xs"
+                  />
+                </div>
+                <div class="space-y-1 mt-2">
+                  <label class="text-gray-deep text-xs">导航速度</label>
+                  <input
+                    type="number"
+                    placeholder="0.5m/s"
+                    class="w-full border border-gray-light rounded px-2 py-1 text-xs"
+                  />
+                </div>
+                <button
+                  class="w-full bg-primary text-white py-1 rounded text-xs mt-2 hover:bg-primary/90"
+                >
+                  保存设置
+                </button>
+              </div>
+            </div>
           </div>
           <div class="flex items-center gap-2">
             <button
-              id="track-record-btn"
-              onclick="toggleTrackRecording()"
               class="bg-primary text-white px-3 py-1 rounded text-sm flex items-center gap-1"
             >
-              <i class="fa fa-circle"></i>开始录制
+              <i class="fa fa-plus"></i>绘制轨道
             </button>
             <button
               class="bg-warning text-white px-3 py-1 rounded text-sm flex items-center gap-1"
@@ -2717,157 +2611,90 @@
         <!-- 主内容 -->
         <main class="flex-1 flex overflow-hidden">
           <!-- 左侧地图绘制区域 -->
-          <section id="track-map-area" class="flex-1 relative grid-bg overflow-auto" style="cursor: crosshair;">
-            <!-- 手绘轨道 SVG -->
-            <svg id="track-svg" class="absolute inset-0 w-full h-full">
-              <defs>
-                <marker id="track-arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                  <polygon points="0 0, 10 3.5, 0 7" fill="#409eff" />
-                </marker>
-              </defs>
-              <!-- 轨道1：单线（蓝色带箭头） - 两点连接带曲线 -->
+          <section class="flex-1 relative grid-bg overflow-auto">
+            <!-- 手绘轨道示例 -->
+            <svg class="absolute inset-0 w-full h-full pointer-events-none">
+              <!-- 轨道1（蓝色） -->
               <path
-                id="track-1"
-                d="M100,100 Q150,50 200,100"
+                d="M100,100 Q150,50 200,100 T300,100"
                 stroke="#409eff"
                 stroke-width="5"
                 fill="none"
                 stroke-linecap="round"
-                marker-end="url(#track-arrow)"
-                data-direction="single"
-                class="cursor-pointer"
               />
-              <!-- 轨道2：双向（绿色虚线） - 多点连接 -->
+              <!-- 轨道2（红色） -->
               <path
-                id="track-2"
-                d="M100,200 Q125,190 150,180 Q175,200 200,220 Q225,210 250,200 Q275,215 300,230"
-                stroke="#67c23a"
-                stroke-width="5"
-                fill="none"
-                stroke-linecap="round"
-                stroke-dasharray="10,5"
-                data-direction="bidirectional"
-                class="cursor-pointer"
-              />
-              <!-- 轨道3：单线（红色） - 两点直线 -->
-              <path
-                id="track-3"
-                d="M100,300 Q200,300 300,300"
+                d="M100,200 L150,180 L200,220 L250,200 L300,230"
                 stroke="#f56c6c"
                 stroke-width="5"
                 fill="none"
                 stroke-linecap="round"
-                marker-end="url(#track-arrow)"
-                data-direction="single"
-                class="cursor-pointer"
               />
-              <!-- 曲度控制点（黄色小点） -->
-              <circle id="track-curve-1" cx="150" cy="50" r="8" fill="#e6a23c" stroke="#fff" stroke-width="2" class="cursor-move" style="display: none;" />
-              <circle id="track-curve-2-1" cx="125" cy="190" r="8" fill="#e6a23c" stroke="#fff" stroke-width="2" class="cursor-move" style="display: none;" />
-              <circle id="track-curve-2-2" cx="175" cy="200" r="8" fill="#e6a23c" stroke="#fff" stroke-width="2" class="cursor-move" style="display: none;" />
-              <circle id="track-curve-2-3" cx="225" cy="210" r="8" fill="#e6a23c" stroke="#fff" stroke-width="2" class="cursor-move" style="display: none;" />
-              <circle id="track-curve-2-4" cx="275" cy="215" r="8" fill="#e6a23c" stroke="#fff" stroke-width="2" class="cursor-move" style="display: none;" />
-              <circle id="track-curve-3" cx="200" cy="300" r="8" fill="#e6a23c" stroke="#fff" stroke-width="2" class="cursor-move" style="display: none;" />
             </svg>
 
             <!-- 轨道节点 -->
             <div
               class="map-point map-point-normal"
               style="left: 100px; top: 100px"
-              data-point-id="T1-1"
             ></div>
             <div
               class="map-point map-point-normal"
               style="left: 200px; top: 100px"
-              data-point-id="T1-2"
+            ></div>
+            <div
+              class="map-point map-point-normal"
+              style="left: 300px; top: 100px"
             ></div>
 
             <div
               class="map-point map-point-normal"
               style="left: 100px; top: 200px"
-              data-point-id="T2-1"
             ></div>
             <div
               class="map-point map-point-normal"
               style="left: 150px; top: 180px"
-              data-point-id="T2-2"
             ></div>
             <div
               class="map-point map-point-normal"
               style="left: 200px; top: 220px"
-              data-point-id="T2-3"
             ></div>
             <div
               class="map-point map-point-normal"
               style="left: 250px; top: 200px"
-              data-point-id="T2-4"
             ></div>
             <div
               class="map-point map-point-normal"
               style="left: 300px; top: 230px"
-              data-point-id="T2-5"
-            ></div>
-
-            <div
-              class="map-point map-point-normal"
-              style="left: 100px; top: 300px"
-              data-point-id="T3-1"
-            ></div>
-            <div
-              class="map-point map-point-normal"
-              style="left: 300px; top: 300px"
-              data-point-id="T3-2"
             ></div>
 
             <!-- 右上角轨道编辑按钮组 -->
             <div
-              class="absolute top-4 right-80 flex items-center gap-2 bg-white p-2 rounded border border-gray-light shadow-lg"
+              class="absolute top-4 right-80 flex items-center gap-2 bg-white p-1 rounded border border-gray-light"
             >
               <span class="text-xs text-gray-deep mr-2">轨道编辑</span>
               <button
-                onclick="toggleTrackAddMode()"
-                class="w-7 h-7 rounded bg-primary text-white flex items-center justify-center text-sm"
-                title="添加轨道"
+                class="w-6 h-6 rounded bg-primary text-white flex items-center justify-center text-xs"
               >
-                <i class="fa fa-plus"></i>
+                +
               </button>
               <button
-                onclick="toggleTrackEditMode()"
-                class="w-7 h-7 rounded bg-warning text-white flex items-center justify-center text-sm"
-                title="编辑轨道"
+                class="w-6 h-6 rounded bg-warning text-white flex items-center justify-center text-xs"
               >
-                <i class="fa fa-pencil"></i>
+                ✎
               </button>
               <button
-                onclick="toggleTrackCurveMode()"
-                class="w-7 h-7 rounded bg-secondary text-white flex items-center justify-center text-sm"
-                title="调整曲度"
+                class="w-6 h-6 rounded bg-danger text-white flex items-center justify-center text-xs"
               >
-                <i class="fa fa-sliders"></i>
-              </button>
-              <button
-                class="w-7 h-7 rounded bg-danger text-white flex items-center justify-center text-sm"
-                title="删除轨道"
-              >
-                <i class="fa fa-trash"></i>
+                −
               </button>
             </div>
 
             <!-- 轨道绘制提示 -->
             <div
-              id="track-hint"
-              class="absolute top-20 left-1/2 -translate-x-1/2 bg-white/95 p-3 rounded border border-gray-light shadow text-xs text-gray-deep"
+              class="absolute top-20 left-1/2 -translate-x-1/2 bg-white/90 p-2 rounded border border-gray-light text-xs text-gray-deep"
             >
-              <i class="fa fa-info-circle text-primary mr-1"></i
-              >选择<strong>添加轨道模式</strong>后，点击地图选择起点，再点击选择终点来创建轨道。
-            </div>
-
-            <!-- 录制状态提示 -->
-            <div
-              id="track-record-status"
-              class="absolute top-36 left-1/2 -translate-x-1/2 bg-danger/90 text-white px-4 py-2 rounded shadow-lg text-sm hidden"
-            >
-              <i class="fa fa-circle text-xs animate-pulse mr-2"></i>正在录制轨道... 点击添加点，双击结束
+              <i class="fa fa-mouse-pointer mr-1"></i
+              >点击并拖动鼠标绘制轨道，双击结束绘制
             </div>
           </section>
 
@@ -2894,7 +2721,7 @@
                     checked
                     class="accent-primary w-3 h-3"
                   />
-                  <span>节点</span>
+                  <span>点</span>
                 </label>
                 <label class="flex items-center gap-2 text-xs">
                   <input
@@ -2902,14 +2729,31 @@
                     checked
                     class="accent-primary w-3 h-3"
                   />
-                  <span>轨道</span>
+                  <span>手绘路径</span>
                 </label>
                 <label class="flex items-center gap-2 text-xs">
                   <input
                     type="checkbox"
+                    checked
                     class="accent-primary w-3 h-3"
                   />
-                  <span>曲度控制点</span>
+                  <span>虚拟墙</span>
+                </label>
+                <label class="flex items-center gap-2 text-xs">
+                  <input
+                    type="checkbox"
+                    checked
+                    class="accent-primary w-3 h-3"
+                  />
+                  <span>手绘轨道</span>
+                </label>
+                <label class="flex items-center gap-2 text-xs">
+                  <input type="checkbox" class="accent-primary w-3 h-3" />
+                  <span>GPS</span>
+                </label>
+                <label class="flex items-center gap-2 text-xs">
+                  <input type="checkbox" class="accent-primary w-3 h-3" />
+                  <span>停车位</span>
                 </label>
                 <label class="flex items-center gap-2 text-xs">
                   <input
@@ -2922,87 +2766,46 @@
               </div>
             </div>
 
-            <!-- 轨道属性设置 -->
+            <!-- 轨道绘制设置 -->
             <div class="panel-card">
               <div class="panel-title">
                 <i class="fa fa-sliders text-primary"></i>
-                轨道属性设置
+                轨道绘制设置
               </div>
-              <div class="space-y-3">
-                <div class="space-y-1">
-                  <label class="text-xs text-gray-deep">轨道名称</label>
-                  <input
-                    type="text"
-                    value="Track 1"
-                    class="w-full border border-gray-light rounded px-2 py-1.5 text-xs"
-                  />
-                </div>
-                <div class="space-y-1">
-                  <label class="text-xs text-gray-deep">轨道方向</label>
-                  <div class="flex gap-2">
-                    <button
-                      id="track-dir-single-btn"
-                      onclick="setTrackDirection('single')"
-                      class="flex-1 px-2 py-1 rounded text-xs bg-primary text-white"
-                    >
-                      单线
-                    </button>
-                    <button
-                      id="track-dir-bidirectional-btn"
-                      onclick="setTrackDirection('bidirectional')"
-                      class="flex-1 px-2 py-1 rounded text-xs bg-gray-200 text-gray-700"
-                    >
-                      双向
-                    </button>
-                  </div>
-                </div>
-                <div class="space-y-1">
-                  <label class="text-xs text-gray-deep">曲度值</label>
-                  <div class="flex items-center gap-2">
-                    <input
-                      id="track-curve-slider"
-                      type="range"
-                      min="0"
-                      max="100"
-                      value="50"
-                      class="flex-1"
-                    />
-                    <span id="track-curve-value" class="text-xs w-8 text-right">50</span>
-                  </div>
-                </div>
-                <div class="space-y-1">
-                  <label class="text-xs text-gray-deep">轨道宽度</label>
-                  <div class="flex items-center gap-2">
+              <div class="space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span>轨道宽度</span>
+                  <div class="flex items-center gap-1">
                     <input
                       type="number"
                       value="5"
                       min="1"
                       max="20"
-                      class="w-16 border border-gray-light rounded px-2 py-1 text-xs"
+                      class="w-12 border border-gray-light rounded px-1 py-0.5 text-xs"
                     />
-                    <span>px</span>
+                    <span>cm</span>
                   </div>
                 </div>
-                <div class="space-y-1">
-                  <label class="text-xs text-gray-deep">轨道颜色</label>
-                  <div class="flex gap-2">
-                    <button
-                      class="w-7 h-7 rounded bg-primary"
-                      data-color="#409eff"
-                    ></button>
-                    <button
-                      class="w-7 h-7 rounded bg-success"
-                      data-color="#67c23a"
-                    ></button>
-                    <button
-                      class="w-7 h-7 rounded bg-warning"
-                      data-color="#e6a23c"
-                    ></button>
-                    <button
-                      class="w-7 h-7 rounded bg-danger"
-                      data-color="#f56c6c"
-                    ></button>
-                  </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span>轨道颜色</span>
+                  <select
+                    class="border border-gray-light rounded px-1 py-0.5 text-xs"
+                  >
+                    <option>蓝色</option>
+                    <option>红色</option>
+                    <option>绿色</option>
+                    <option>黄色</option>
+                  </select>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span>绘制模式</span>
+                  <select
+                    class="border border-gray-light rounded px-1 py-0.5 text-xs"
+                  >
+                    <option>自由绘制</option>
+                    <option>直线绘制</option>
+                    <option>曲线绘制</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -3016,23 +2819,19 @@
               <div class="space-y-1">
                 <div class="stats-item">
                   <span>总轨道数</span>
-                  <span class="stats-value">3</span>
+                  <span class="stats-value">2</span>
                 </div>
                 <div class="stats-item">
-                  <span>单线路径</span>
-                  <span class="stats-value text-primary">2</span>
+                  <span>轨道1长度</span>
+                  <span class="stats-value text-primary">200.0cm</span>
                 </div>
                 <div class="stats-item">
-                  <span>双向路径</span>
-                  <span class="stats-value text-success">1</span>
+                  <span>轨道2长度</span>
+                  <span class="stats-value text-danger">210.0cm</span>
                 </div>
                 <div class="stats-item">
-                  <span>总节点数</span>
-                  <span class="stats-value">9</span>
-                </div>
-                <div class="stats-item">
-                  <span>轨道总长度</span>
-                  <span class="stats-value">680px</span>
+                  <span>总长度</span>
+                  <span class="stats-value">410.0cm</span>
                 </div>
               </div>
             </div>
@@ -3047,6 +2846,9 @@
                 <div class="space-y-2 mt-2">
                   <button class="btn-sm-primary">
                     <i class="fa fa-refresh"></i>刷新轨道
+                  </button>
+                  <button class="btn-sm-primary">
+                    <i class="fa fa-arrows"></i>调整节点
                   </button>
                   <button class="btn-sm-primary">
                     <i class="fa fa-download"></i>导出轨道数据
@@ -3243,41 +3045,188 @@
               </div>
             </div>
 
-            <!-- 导航设置-激光雷达配置 -->
+            <!-- 设备设置-防跌落配置 -->
             <div
               class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
             >
               <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
                 <h3 class="font-semibold text-gray-800 flex items-center gap-2">
-                  <i class="fa fa-eye text-primary"></i>
-                  导航设置 - 激光雷达配置
+                  <i class="fa fa-shield text-primary"></i>
+                  设备设置 - 防跌落配置
                 </h3>
               </div>
               <div class="p-4 space-y-4">
-                <!-- 前方避障距离 -->
+                <!-- 防跌落最大距离 -->
                 <div class="flex items-center gap-4">
                   <label class="flex-1 text-sm text-gray-700"
-                    >前方避障距离 (单位: 米)</label
+                    >防跌落最大距离 (单位: 米)</label
                   >
                   <div class="flex items-center gap-3 w-96">
                     <input
                       type="range"
-                      id="lidar-front-avoid-distance"
+                      id="anti-drop-max"
                       min="0"
                       max="5"
                       step="0.1"
-                      value="1.5"
+                      value="0.5"
                       class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
                     />
                     <input
                       type="number"
-                      id="lidar-front-avoid-distance-value"
-                      value="1.5"
+                      id="anti-drop-max-value"
+                      value="0.5"
                       min="0"
                       max="5"
                       step="0.1"
                       class="w-16 px-2 py-1 text-sm border border-gray-300 rounded text-center"
                     />
+                  </div>
+                  <div class="w-8 flex justify-center">
+                    <i class="fa fa-check-circle text-success"></i>
+                  </div>
+                </div>
+                <!-- 防跌落最小距离 -->
+                <div class="flex items-center gap-4">
+                  <label class="flex-1 text-sm text-gray-700"
+                    >防跌落最小距离 (单位: 米)</label
+                  >
+                  <div class="flex items-center gap-3 w-96">
+                    <input
+                      type="range"
+                      id="anti-drop-min"
+                      min="0"
+                      max="5"
+                      step="0.1"
+                      value="0.1"
+                      class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                    />
+                    <input
+                      type="number"
+                      id="anti-drop-min-value"
+                      value="0.1"
+                      min="0"
+                      max="5"
+                      step="0.1"
+                      class="w-16 px-2 py-1 text-sm border border-gray-300 rounded text-center"
+                    />
+                  </div>
+                  <div class="w-8 flex justify-center">
+                    <i class="fa fa-check-circle text-success"></i>
+                  </div>
+                </div>
+                <!-- 防跌落开关 -->
+                <div class="flex items-center gap-4">
+                  <label class="flex-1 text-sm text-gray-700"
+                    >防跌落开关 (开启为防跌落)</label
+                  >
+                  <div class="flex items-center gap-3 w-96 justify-end">
+                    <label
+                      class="relative inline-flex items-center cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        id="anti-drop-switch"
+                        class="sr-only peer"
+                        checked
+                      />
+                      <div
+                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"
+                      ></div>
+                    </label>
+                  </div>
+                  <div class="w-8 flex justify-center">
+                    <i class="fa fa-check-circle text-success"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 设备设置-超声波配置 -->
+            <div
+              class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+            >
+              <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                <h3 class="font-semibold text-gray-800 flex items-center gap-2">
+                  <i class="fa fa-rss text-primary"></i>
+                  设备设置 - 超声波配置
+                </h3>
+              </div>
+              <div class="p-4 space-y-4">
+                <!-- 超声波最大距离 -->
+                <div class="flex items-center gap-4">
+                  <label class="flex-1 text-sm text-gray-700"
+                    >超声波最大距离 (单位: 米)</label
+                  >
+                  <div class="flex items-center gap-3 w-96">
+                    <input
+                      type="range"
+                      id="ultrasonic-max"
+                      min="0"
+                      max="10"
+                      step="0.1"
+                      value="2"
+                      class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                    />
+                    <input
+                      type="number"
+                      id="ultrasonic-max-value"
+                      value="2"
+                      min="0"
+                      max="10"
+                      step="0.1"
+                      class="w-16 px-2 py-1 text-sm border border-gray-300 rounded text-center"
+                    />
+                  </div>
+                  <div class="w-8 flex justify-center">
+                    <i class="fa fa-check-circle text-success"></i>
+                  </div>
+                </div>
+                <!-- 超声波最小距离 -->
+                <div class="flex items-center gap-4">
+                  <label class="flex-1 text-sm text-gray-700"
+                    >超声波最小距离 (单位: 米)</label
+                  >
+                  <div class="flex items-center gap-3 w-96">
+                    <input
+                      type="range"
+                      id="ultrasonic-min"
+                      min="0"
+                      max="5"
+                      step="0.1"
+                      value="0.3"
+                      class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                    />
+                    <input
+                      type="number"
+                      id="ultrasonic-min-value"
+                      value="0.3"
+                      min="0"
+                      max="5"
+                      step="0.1"
+                      class="w-16 px-2 py-1 text-sm border border-gray-300 rounded text-center"
+                    />
+                  </div>
+                  <div class="w-8 flex justify-center">
+                    <i class="fa fa-check-circle text-success"></i>
+                  </div>
+                </div>
+                <!-- 超声波开关 -->
+                <div class="flex items-center gap-4">
+                  <label class="flex-1 text-sm text-gray-700">超声波开关</label>
+                  <div class="flex items-center gap-3 w-96 justify-end">
+                    <label
+                      class="relative inline-flex items-center cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        id="ultrasonic-switch"
+                        class="sr-only peer"
+                        checked
+                      />
+                      <div
+                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"
+                      ></div>
+                    </label>
                   </div>
                   <div class="w-8 flex justify-center">
                     <i class="fa fa-check-circle text-success"></i>
@@ -6399,51 +6348,30 @@
       });
 
       // 模拟AGV移动和数据更新
+      const agvCar = document.getElementById("agvCar");
       const posX = document.getElementById("posX");
       const posY = document.getElementById("posY");
       const speed = document.getElementById("speed");
-      const angularVelocity = document.getElementById("angular-velocity");
+      const angle = document.getElementById("angle");
       const current = document.getElementById("current");
       const voltage = document.getElementById("voltage");
       const mileage = document.getElementById("mileage");
       const batteryBar = document.getElementById("batteryBar");
       const batteryText = document.getElementById("batteryText");
       const uptime = document.getElementById("uptime");
-      const mapMatch = document.getElementById("map-match");
-      const chassisStatus = document.getElementById("chassis-status");
-      const batteryTemp = document.getElementById("battery-temp");
-      const errorCode = document.getElementById("error-code");
 
-      // 小车状态
+      // 路径点
+      const pathPoints = [
+        { x: 280, y: 250 },
+        { x: 280, y: 450 },
+        { x: 380, y: 450 },
+      ];
+      let currentPointIndex = 0;
       let carX = 280;
       let carY = 250;
-      let carRotation = 0; // 小车当前角度（度）
       let battery = 82;
       let runSeconds = 2 * 3600 + 21 * 60 + 16;
       let totalMileage = 125.9;
-      
-      // 路径点（带类型和方向）
-      const pathPoints = [
-        { x: 280, y: 250, targetRotation: 180 }, // 向下
-        { x: 280, y: 450, targetRotation: 90 },  // 向右
-        { x: 380, y: 450, targetRotation: 0 },   // 向上
-        { x: 220, y: 250, targetRotation: 180 }, // 向下
-      ];
-      let currentPointIndex = 0;
-      
-      // 底盘状态列表
-      const chassisStates = ['空闲', '导航', '充电', '急停', '异常'];
-      let currentChassisState = 0;
-
-      // 更新小车位置和方向的函数
-      function updateAgvPosition() {
-        const agvCar = document.getElementById("agvCar");
-        if (agvCar) {
-          // 使用SVG transform来移动和旋转小车
-          agvCar.setAttribute('transform', 
-            `translate(${carX}, ${carY}) rotate(${carRotation})`);
-        }
-      }
 
       // 每秒更新数据
       setInterval(() => {
@@ -6456,25 +6384,11 @@
 
           if (dist > 2) {
             const moveSpeed = 1;
-            
-            // 移动小车
             carX += (dx / dist) * moveSpeed;
             carY += (dy / dist) * moveSpeed;
-            
-            // 计算并旋转小车方向（朝着目标点）
-            const targetAngle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
-            let angleDiff = targetAngle - carRotation;
-            
-            // 归一化角度差异到 -180~180 度
-            while (angleDiff > 180) angleDiff -= 360;
-            while (angleDiff < -180) angleDiff += 360;
-            
-            // 平滑旋转
-            if (Math.abs(angleDiff) > 1) {
-              carRotation += Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), 3);
-            }
 
-            updateAgvPosition();
+            agvCar.style.left = carX + "px";
+            agvCar.style.top = carY + "px";
 
             // 更新坐标
             posX.textContent = ((carX - 100) * 0.1 + 30).toFixed(2);
@@ -6484,11 +6398,7 @@
             totalMileage += 0.001;
             mileage.textContent = totalMileage.toFixed(1) + " km";
           } else {
-            // 到达目标点后，转向下一个点的方向
             currentPointIndex = (currentPointIndex + 1) % pathPoints.length;
-            const nextTarget = pathPoints[currentPointIndex];
-            carRotation = nextTarget.targetRotation;
-            updateAgvPosition();
           }
         }
 
@@ -6510,29 +6420,6 @@
 
         // 模拟速度
         speed.textContent = (0.4 + Math.random() * 0.1).toFixed(1) + " m/s";
-        
-        // 模拟角速度
-        angularVelocity.textContent = (Math.random() * 2 - 1).toFixed(1) + "°/s";
-        
-        // 模拟地图匹配度
-        mapMatch.textContent = (90 + Math.random() * 10).toFixed(0) + "%";
-        
-        // 模拟电池温度
-        batteryTemp.textContent = (25 + Math.random() * 10).toFixed(0) + "°C";
-        
-        // 模拟错误码
-        errorCode.textContent = Math.random() > 0.9 ? Math.floor(Math.random() * 100) : 0;
-        errorCode.className = errorCode.textContent === "0" ? "font-medium text-success" : "font-medium text-danger";
-        
-        // 随机更新底盘状态
-        if (Math.random() < 0.01) {
-          currentChassisState = Math.floor(Math.random() * chassisStates.length);
-          const statusText = chassisStates[currentChassisState];
-          chassisStatus.textContent = statusText;
-          chassisStatus.className = "font-medium " + 
-            (statusText === '空闲' || statusText === '导航' || statusText === '充电' ? 'text-success' : 
-             statusText === '急停' ? 'text-warning' : 'text-danger');
-        }
 
         // 更新运行时间
         runSeconds++;
@@ -6541,40 +6428,6 @@
         const seconds = runSeconds % 60;
         uptime.textContent = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
       }, 1000);
-
-      // 登录连接函数
-      function handleConnect() {
-        const btn = document.getElementById('connect-btn');
-        const status = document.getElementById('connect-status');
-        const statusText = document.getElementById('connect-status-text');
-        
-        btn.disabled = true;
-        status.classList.remove('hidden');
-        statusText.textContent = '正在连接...';
-        
-        // 模拟连接过程
-        setTimeout(() => {
-          statusText.textContent = '验证身份...';
-        }, 1000);
-        
-        setTimeout(() => {
-          statusText.textContent = '连接成功！';
-          btn.innerHTML = '<i class="fa fa-check"></i><span>连接成功</span>';
-          btn.classList.remove('bg-primary');
-          btn.classList.add('bg-success');
-          
-          // 延迟跳转到主页面
-          setTimeout(() => {
-            switchPage('main-page');
-          }, 800);
-        }, 2000);
-      }
-      
-      // 快速连接设置
-      function setQuickConnect(ip, port) {
-        document.getElementById('robot-ip').value = ip;
-        document.getElementById('robot-port').value = port;
-      }
 
       // 页面切换函数
       function switchPage(targetPageId) {
@@ -8180,395 +8033,6 @@
           redrawVirtualWall();
         }
       }
-
-      // 路径管理相关功能
-      let pathRecordingMode = false;
-      let pathRecordingPoints = [];
-      let pathEditMode = false;
-      let pathCurveMode = false;
-      let currentPathDirection = 'single';
-      let selectedPath = null;
-
-      // 路径拖拽相关 - 改进版
-      let isDraggingPath = false;
-      let draggedPathControl = null;
-      let pathDragInitialized = false;
-
-      // 切换路径录制
-      function togglePathRecording() {
-        pathRecordingMode = !pathRecordingMode;
-        const btn = document.getElementById('path-record-btn');
-        const status = document.getElementById('record-status');
-        
-        if (pathRecordingMode) {
-          btn.innerHTML = '<i class="fa fa-stop"></i>停止录制';
-          btn.classList.remove('bg-primary');
-          btn.classList.add('bg-danger');
-          status.classList.remove('hidden');
-          pathRecordingPoints = [];
-        } else {
-          btn.innerHTML = '<i class="fa fa-circle"></i>开始录制';
-          btn.classList.remove('bg-danger');
-          btn.classList.add('bg-primary');
-          status.classList.add('hidden');
-          if (pathRecordingPoints.length > 1) {
-            alert('已录制 ' + pathRecordingPoints.length + ' 个点！');
-          }
-        }
-      }
-
-      // 初始化路径拖拽事件 - 改进版
-      function initPathDragging() {
-        if (pathDragInitialized) return;
-        pathDragInitialized = true;
-
-        const svg = document.getElementById('path-svg');
-        if (!svg) return;
-
-        const controls = document.querySelectorAll('[id^="curve-ctrl-"]');
-
-        // 为每个控制点添加事件
-        controls.forEach(control => {
-          control.style.cursor = 'grab';
-          
-          control.addEventListener('mousedown', function(e) {
-            if (!pathCurveMode) return;
-            e.preventDefault();
-            e.stopPropagation();
-            isDraggingPath = true;
-            draggedPathControl = this;
-            this.style.cursor = 'grabbing';
-          });
-        });
-
-        // 鼠标移动事件
-        svg.addEventListener('mousemove', function(e) {
-          if (!isDraggingPath || !draggedPathControl) return;
-          
-          // 获取SVG内部的准确坐标
-          const pt = svg.createSVGPoint();
-          pt.x = e.clientX;
-          pt.y = e.clientY;
-          const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
-          
-          // 更新控制点位置
-          draggedPathControl.setAttribute('cx', svgP.x);
-          draggedPathControl.setAttribute('cy', svgP.y);
-          
-          // 更新路径
-          updatePathByControlImproved(draggedPathControl.id, svgP.x, svgP.y);
-        });
-
-        // 鼠标抬起事件
-        document.addEventListener('mouseup', function() {
-          if (isDraggingPath && draggedPathControl) {
-            draggedPathControl.style.cursor = 'grab';
-          }
-          isDraggingPath = false;
-          draggedPathControl = null;
-        });
-      }
-
-      // 根据控制点更新路径 - 改进版，保持其他曲线不变
-      function updatePathByControlImproved(controlId, newX, newY) {
-        const pathMap = {
-          'curve-ctrl-1': { pathId: 'path-1', start: '100,200', end: '180,200' },
-          'curve-ctrl-2': { pathId: 'path-2', start: '180,200', end: '180,130' },
-          'curve-ctrl-3': { pathId: 'path-3', start: '180,130', end: '280,130' },
-          'curve-ctrl-4': { pathId: 'path-4', start: '280,130', end: '280,260' },
-          'curve-ctrl-5': { pathId: 'path-5', start: '280,260', end: '380,260' }
-        };
-        
-        const config = pathMap[controlId];
-        if (!config) return;
-        
-        const path = document.getElementById(config.pathId);
-        if (!path) return;
-        
-        // 只更新当前的路径曲线，保持起始点和结束点固定
-        path.setAttribute('d', 'M' + config.start + ' Q' + newX + ',' + newY + ' ' + config.end);
-      }
-
-      // 切换添加模式
-      function toggleAddMode() {
-        pathEditMode = false;
-        pathCurveMode = false;
-        hideCurveControls();
-        alert('添加模式：点击两点来创建路径');
-      }
-
-      // 切换编辑模式
-      function toggleEditMode() {
-        pathEditMode = !pathEditMode;
-        pathCurveMode = false;
-        hideCurveControls();
-        if (pathEditMode) {
-          alert('编辑模式：点击路径可以选中和编辑');
-        }
-      }
-
-      // 切换曲度模式
-      function toggleCurveMode() {
-        pathCurveMode = !pathCurveMode;
-        pathEditMode = false;
-        if (pathCurveMode) {
-          showCurveControls();
-          initPathDragging();
-          alert('曲度模式：现在可以看到并拖拽黄色控制点来调整路径曲度');
-        } else {
-          hideCurveControls();
-        }
-      }
-
-      // 显示曲度控制点
-      function showCurveControls() {
-        const controls = document.querySelectorAll('[id^="curve-ctrl-"]');
-        controls.forEach(c => c.style.display = 'block');
-      }
-
-      // 隐藏曲度控制点
-      function hideCurveControls() {
-        const controls = document.querySelectorAll('[id^="curve-ctrl-"]');
-        controls.forEach(c => c.style.display = 'none');
-      }
-
-      // 设置路径方向
-      function setPathDirection(dir) {
-        currentPathDirection = dir;
-        const singleBtn = document.getElementById('dir-single-btn');
-        const biBtn = document.getElementById('dir-bidirectional-btn');
-        
-        if (dir === 'single') {
-          singleBtn.classList.add('bg-primary', 'text-white');
-          singleBtn.classList.remove('bg-gray-200', 'text-gray-700');
-          biBtn.classList.remove('bg-primary', 'text-white');
-          biBtn.classList.add('bg-gray-200', 'text-gray-700');
-        } else {
-          biBtn.classList.add('bg-primary', 'text-white');
-          biBtn.classList.remove('bg-gray-200', 'text-gray-700');
-          singleBtn.classList.remove('bg-primary', 'text-white');
-          singleBtn.classList.add('bg-gray-200', 'text-gray-700');
-        }
-      }
-
-      // 曲度滑块事件
-      document.addEventListener('DOMContentLoaded', function() {
-        const curveSlider = document.getElementById('curve-slider');
-        if (curveSlider) {
-          curveSlider.addEventListener('input', function() {
-            document.getElementById('curve-value').textContent = this.value;
-          });
-        }
-      });
-
-      // 手绘轨道相关功能
-      let trackRecordingMode = false;
-      let trackRecordingPoints = [];
-      let trackEditMode = false;
-      let trackCurveMode = false;
-      let currentTrackDirection = 'single';
-      let selectedTrack = null;
-
-      // 轨道拖拽相关 - 改进版
-      let isDraggingTrack = false;
-      let draggedTrackControl = null;
-      let trackDragInitialized = false;
-
-      // 切换轨道录制
-      function toggleTrackRecording() {
-        trackRecordingMode = !trackRecordingMode;
-        const btn = document.getElementById('track-record-btn');
-        const status = document.getElementById('track-record-status');
-        
-        if (trackRecordingMode) {
-          btn.innerHTML = '<i class="fa fa-stop"></i>停止录制';
-          btn.classList.remove('bg-primary');
-          btn.classList.add('bg-danger');
-          status.classList.remove('hidden');
-          trackRecordingPoints = [];
-        } else {
-          btn.innerHTML = '<i class="fa fa-circle"></i>开始录制';
-          btn.classList.remove('bg-danger');
-          btn.classList.add('bg-primary');
-          status.classList.add('hidden');
-          if (trackRecordingPoints.length > 1) {
-            alert('已录制轨道，' + trackRecordingPoints.length + ' 个点！');
-          }
-        }
-      }
-
-      // 初始化轨道拖拽事件 - 改进版
-      function initTrackDragging() {
-        if (trackDragInitialized) return;
-        trackDragInitialized = true;
-
-        const svg = document.getElementById('track-svg');
-        if (!svg) return;
-
-        const controls = document.querySelectorAll('[id^="track-curve-"]');
-
-        // 为每个控制点添加事件
-        controls.forEach(control => {
-          control.style.cursor = 'grab';
-          
-          control.addEventListener('mousedown', function(e) {
-            if (!trackCurveMode) return;
-            e.preventDefault();
-            e.stopPropagation();
-            isDraggingTrack = true;
-            draggedTrackControl = this;
-            this.style.cursor = 'grabbing';
-          });
-        });
-
-        // 鼠标移动事件
-        svg.addEventListener('mousemove', function(e) {
-          if (!isDraggingTrack || !draggedTrackControl) return;
-          
-          // 获取SVG内部的准确坐标
-          const pt = svg.createSVGPoint();
-          pt.x = e.clientX;
-          pt.y = e.clientY;
-          const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
-          
-          // 更新控制点位置
-          draggedTrackControl.setAttribute('cx', svgP.x);
-          draggedTrackControl.setAttribute('cy', svgP.y);
-          
-          // 更新轨道
-          updateTrackByControl(draggedTrackControl.id, svgP.x, svgP.y);
-        });
-
-        // 鼠标抬起事件
-        document.addEventListener('mouseup', function() {
-          if (isDraggingTrack && draggedTrackControl) {
-            draggedTrackControl.style.cursor = 'grab';
-          }
-          isDraggingTrack = false;
-          draggedTrackControl = null;
-        });
-      }
-
-      // 根据控制点更新轨道
-      function updateTrackByControl(controlId, newX, newY) {
-        // 轨道1的控制点
-        if (controlId === 'track-curve-1') {
-          const track = document.getElementById('track-1');
-          if (track) {
-            track.setAttribute('d', 'M100,100 Q' + newX + ',' + newY + ' 200,100');
-          }
-        }
-        // 轨道2的多个控制点
-        else if (controlId === 'track-curve-2-1') {
-          const track = document.getElementById('track-2');
-          if (track) {
-            const currentD = track.getAttribute('d');
-            const parts = currentD.split('Q');
-            if (parts.length > 1) {
-              const newD = parts[0] + 'Q' + newX + ',' + newY + ' 150,180' + 
-                           currentD.substring(currentD.indexOf('150,180') + 6);
-              track.setAttribute('d', 'M100,200 Q' + newX + ',' + newY + ' 150,180 Q175,200 200,220 Q225,210 250,200 Q275,215 300,230');
-            }
-          }
-        }
-        else if (controlId === 'track-curve-2-2') {
-          const track = document.getElementById('track-2');
-          if (track) {
-            track.setAttribute('d', 'M100,200 Q125,190 150,180 Q' + newX + ',' + newY + ' 200,220 Q225,210 250,200 Q275,215 300,230');
-          }
-        }
-        else if (controlId === 'track-curve-2-3') {
-          const track = document.getElementById('track-2');
-          if (track) {
-            track.setAttribute('d', 'M100,200 Q125,190 150,180 Q175,200 200,220 Q' + newX + ',' + newY + ' 250,200 Q275,215 300,230');
-          }
-        }
-        else if (controlId === 'track-curve-2-4') {
-          const track = document.getElementById('track-2');
-          if (track) {
-            track.setAttribute('d', 'M100,200 Q125,190 150,180 Q175,200 200,220 Q225,210 250,200 Q' + newX + ',' + newY + ' 300,230');
-          }
-        }
-        // 轨道3的控制点
-        else if (controlId === 'track-curve-3') {
-          const track = document.getElementById('track-3');
-          if (track) {
-            track.setAttribute('d', 'M100,300 Q' + newX + ',' + newY + ' 300,300');
-          }
-        }
-      }
-
-      // 切换轨道添加模式
-      function toggleTrackAddMode() {
-        trackEditMode = false;
-        trackCurveMode = false;
-        hideTrackCurveControls();
-        alert('添加模式：点击两点来创建轨道');
-      }
-
-      // 切换轨道编辑模式
-      function toggleTrackEditMode() {
-        trackEditMode = !trackEditMode;
-        trackCurveMode = false;
-        hideTrackCurveControls();
-        if (trackEditMode) {
-          alert('编辑模式：点击轨道可以选中和编辑');
-        }
-      }
-
-      // 切换轨道曲度模式
-      function toggleTrackCurveMode() {
-        trackCurveMode = !trackCurveMode;
-        trackEditMode = false;
-        if (trackCurveMode) {
-          showTrackCurveControls();
-          initTrackDragging();
-          alert('曲度模式：现在可以看到并拖拽黄色控制点来调整轨道曲度');
-        } else {
-          hideTrackCurveControls();
-        }
-      }
-
-      // 显示轨道曲度控制点
-      function showTrackCurveControls() {
-        const controls = document.querySelectorAll('[id^="track-curve-"]');
-        controls.forEach(c => c.style.display = 'block');
-      }
-
-      // 隐藏轨道曲度控制点
-      function hideTrackCurveControls() {
-        const controls = document.querySelectorAll('[id^="track-curve-"]');
-        controls.forEach(c => c.style.display = 'none');
-      }
-
-      // 设置轨道方向
-      function setTrackDirection(dir) {
-        currentTrackDirection = dir;
-        const singleBtn = document.getElementById('track-dir-single-btn');
-        const biBtn = document.getElementById('track-dir-bidirectional-btn');
-        
-        if (dir === 'single') {
-          singleBtn.classList.add('bg-primary', 'text-white');
-          singleBtn.classList.remove('bg-gray-200', 'text-gray-700');
-          biBtn.classList.remove('bg-primary', 'text-white');
-          biBtn.classList.add('bg-gray-200', 'text-gray-700');
-        } else {
-          biBtn.classList.add('bg-primary', 'text-white');
-          biBtn.classList.remove('bg-gray-200', 'text-gray-700');
-          singleBtn.classList.remove('bg-primary', 'text-white');
-          singleBtn.classList.add('bg-gray-200', 'text-gray-700');
-        }
-      }
-
-      // 轨道曲度滑块事件
-      document.addEventListener('DOMContentLoaded', function() {
-        const trackCurveSlider = document.getElementById('track-curve-slider');
-        if (trackCurveSlider) {
-          trackCurveSlider.addEventListener('input', function() {
-            document.getElementById('track-curve-value').textContent = this.value;
-          });
-        }
-      });
 
       // 虚拟墙画布将在切换到虚拟墙页面时初始化
       // 不需要在页面加载时初始化，因为初始状态下页面是隐藏的
